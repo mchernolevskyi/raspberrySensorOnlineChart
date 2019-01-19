@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+	<body>
+		<canvas id="canvas" width="573" height="286" class="chartjs-render-monitor" style="display: block; height: 229px; width: 459px;"></canvas>
+	</body>
+	<script
+  src="https://code.jquery.com/jquery-3.3.1.js"
+  integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
+  crossorigin="anonymous"></script>
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.bundle.min.js"></script>
+  
+	<script>
+		// past all this code in windows.onload block
+	
+		$.ajax({
+            url: "data.txt",
+			type : "GET",
+            async: false,
+            error : function(req, message) {
+						console.log(message);
+					},
+			success : afterReceiveFile,
+			dataType :  "text"
+        });	
+		
+		
+		function afterReceiveFile(data) {
+			var result = data.split('\n').map(function(str) {return {
+				date: (str.match(/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/g)|| [])[0] || "",
+				temperature: (str.match(/\d+.\d+ C/g) || [])[0] || "",
+				percent: (str.match(/\d+.\d+ %/g) || [])[0] || ""
+			}});
+			
+			if(!result[result.length -1].date)result.pop(); //because of the last empty string 
+			console.log(result);
+			
+			
+			var lineChartData = {
+			labels: result.map(function(obj) {return obj.date}),
+			datasets: [{
+				label: 'Temperature, C',
+				borderColor: "rgb(255, 99, 132)",
+				backgroundColor: "rgb(255, 99, 132)",
+				fill: false,
+				data: result.map(function(obj) {return obj.temperature.replace('C', '')}),
+				yAxisID: 'y-axis-1',
+				showLine: false,
+				pointRadius: 3,
+				pointHoverRadius: 5,
+			}, {
+				label: 'Humidity, %',
+				borderColor: 'rgb(54, 162, 235)',
+				backgroundColor: 'rgb(54, 162, 235)',
+				fill: false,
+				data: result.map(function(obj) {return obj.percent.replace('%', '')}),
+				yAxisID: 'y-axis-2',
+				showLine: false,
+				pointRadius: 3,
+				pointHoverRadius: 5,
+			}]
+		};
+
+			var ctx = document.getElementById('canvas').getContext('2d');
+			var myLine = Chart.Line(ctx, {
+				data: lineChartData,
+				options: {
+					responsive: true,
+					hoverMode: 'index',
+					stacked: false,
+					title: {
+						display: true,
+						text: 'Temperature and Humidity Sensor Data Chart'
+					},
+					scales: {
+						xAxes: [{
+							display: true,
+							scaleLabel: {
+								display: true,
+								labelString: 'date'
+							}
+						}],
+						yAxes: [{
+							type: 'linear', // only linear but allow scale type registration. This allows extensions to exist solely for log scale for instance
+							display: true,
+							position: 'left',
+							id: 'y-axis-1',
+							scaleLabel: {
+								display: true,
+								labelString: 'Temperature, C'
+							}
+						}, {
+							type: 'linear', // only linear but allow scale type registration. This allows extensions to exist solely for log scale for instance
+							display: true,
+							position: 'right',
+							id: 'y-axis-2',
+							scaleLabel: {
+								display: true,
+								labelString: 'Humidity, %'
+							},
+
+							// grid line settings
+							gridLines: {
+								drawOnChartArea: false, // only want the grid lines for one axis to show up
+							},
+						}],
+					}
+				}
+			});
+		};
+		
+	</script>
+</html>
+
