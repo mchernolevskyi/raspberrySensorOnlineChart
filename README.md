@@ -12,4 +12,4 @@ To quickly launch do the following:
 6. Point your browser to http://raspberry/dh11/chart.html
 7. Enjoy :)
 
-You can also start SimpleHttpServer, Nginx, etc. and you existing project dh11/ folder to view chart.html.
+You can also start SimpleHttpServer, Nginx, etc. and reuse existing project folder dh11/ with chart.html.
