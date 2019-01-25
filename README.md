@@ -8,7 +8,7 @@ To quickly launch do the following:
 3. sudo mkdir /var/www/html/dht11
 4. sudo chmod 777 /var/www/html/dht11
 5. cp dht11/chart.html /var/www/html/dht11
-5. nohup python -u dev/dht11.py > /var/www/html/dht11/data.txt &
+5. nohup python -u dht11.py > /var/www/html/dht11/data.txt &
 6. Point your browser to http://raspberry/dht11/chart.html
 7. Enjoy :)
 
