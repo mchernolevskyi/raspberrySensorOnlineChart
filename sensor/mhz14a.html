@@ -14,7 +14,7 @@
 		// past all this code in windows.onload block
 	
 		$.ajax({
-            url: "data.txt",
+            url: "mhz14a.txt",
 			type : "GET",
             async: false,
             error : function(req, message) {
@@ -28,11 +28,22 @@
 		function afterReceiveFile(data) {
 			var result = data.split('\n').map(function(str) {return {
 				date: (str.match(/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/g)|| [])[0] || "",
-				temperature: (str.match(/\d+.\d+ C/g) || [])[0] || "",
-				percent: (str.match(/\d+.\d+ %/g) || [])[0] || ""
+				temperature: (str.match(/\d+ C/g) || [])[0] || "",
+				percent: (str.match(/\d+.\d+ ppm/g) || [])[0] || ""
 			}});
-			
-			if(!result[result.length -1].date)result.pop(); //because of the last empty string 
+			var i = 0;			
+			for ( ; ; ) {
+				//console.log(i);
+				if(result[i].percent === "") {
+					//console.log(result[i]);
+					result.splice(i, 1);
+					console.log(result.length);
+				} else {
+					i++;
+				}
+				if (i == result.length) break;
+			}
+			//if(!result[result.length -1].date) result.pop(); //because of the last empty string 
 			console.log(result);
 			
 			
@@ -49,11 +60,11 @@
 				pointRadius: 3,
 				pointHoverRadius: 5,
 			}, {
-				label: 'Humidity, %',
+				label: 'CO2, ppm',
 				borderColor: 'rgb(54, 162, 235)',
 				backgroundColor: 'rgb(54, 162, 235)',
 				fill: false,
-				data: result.map(function(obj) {return obj.percent.replace('%', '')}),
+				data: result.map(function(obj) {return obj.percent.replace('ppm', '')}),
 				yAxisID: 'y-axis-2',
 				showLine: false,
 				pointRadius: 3,
@@ -70,7 +81,7 @@
 					stacked: false,
 					title: {
 						display: true,
-						text: 'Temperature and Humidity Sensor Data Chart'
+						text: 'CO2 Sensor Data Chart'
 					},
 					scales: {
 						xAxes: [{
@@ -96,7 +107,7 @@
 							id: 'y-axis-2',
 							scaleLabel: {
 								display: true,
-								labelString: 'Humidity, %'
+								labelString: 'CO2, ppm'
 							},
 
 							// grid line settings
